@@ -3808,7 +3808,7 @@ namespace ts {
         /* @internal */
         getMissingFilePaths(): readonly Path[];
         /* @internal */
-        getFilesByNameMap(): ESMap<string, SourceFile | typeof missingSourceOfProjectReferenceRedirect | typeof missingFile>;
+        getFilesByNameMap(): ESMap<Path, SourceFile | typeof missingSourceOfProjectReferenceRedirect | typeof missingFile>;
 
         /**
          * Emits the JavaScript and declaration files.  If targetSourceFile is not specified, then
@@ -3864,6 +3864,7 @@ namespace ts {
         /* @internal */ getFileProcessingDiagnostics(): FilePreprocessingDiagnostics[] | undefined;
         /* @internal */ getResolvedTypeReferenceDirectives(): ESMap<string, ResolvedTypeReferenceDirectiveWithFailedLookupLocations>;
         isSourceFileFromExternalLibrary(file: SourceFile): boolean;
+        /* @internal */ isSourceFileFromExternalLibraryPath(path: Path): boolean;
         isSourceFileDefaultLibrary(file: SourceFile): boolean;
 
         // For testing purposes only.
@@ -3900,6 +3901,98 @@ namespace ts {
     /*@internal*/
     export interface Program extends TypeCheckerHost, ModuleSpecifierResolutionHost {
     }
+
+    /* @internal */
+    export interface RedirectInfoOfProgramFromBuildInfo {
+        readonly redirectTarget: Pick<SourceFile, "path">;
+    }
+
+    /* @internal */
+    export interface ResolvedProjectReferenceOfProgramFromBuildInfo {
+        commandLine: Pick<ParsedCommandLine, "projectReferences">;
+        sourceFile: Pick<SourceFile, "version" | "path">;
+        references?: readonly (ResolvedProjectReferenceOfProgramFromBuildInfo | undefined)[];
+    }
+
+    /*@internal*/
+    export interface IdentifierOfProgramFromBuildInfo {
+        kind: SyntaxKind.Identifier;
+        escapedText: string;
+    }
+
+    /*@internal*/
+    export interface StringLiteralLikeOfProgramFromBuildInfo {
+        kind: SyntaxKind.StringLiteral | SyntaxKind.NoSubstitutionTemplateLiteral;
+        text: string;
+        escapedText: string;
+    }
+
+    /*@internal*/
+    export type ModuleNameOfProgramFromBuildInfo = IdentifierOfProgramFromBuildInfo | StringLiteralLikeOfProgramFromBuildInfo;
+
+    /*@internal*/
+    export interface SourceFileOfProgramFromBuildInfo {
+        fileName: string;
+        originalFileName: string;
+        path: Path;
+        resolvedPath: Path;
+        flags: NodeFlags;
+        version: string;
+
+        typeReferenceDirectives: readonly string[];
+        libReferenceDirectives: readonly string[];
+        referencedFiles: readonly string[];
+        imports: readonly StringLiteralLikeOfProgramFromBuildInfo[];
+        moduleAugmentations: ModuleNameOfProgramFromBuildInfo[];
+        ambientModuleNames: readonly string[];
+        hasNoDefaultLib: boolean;
+
+        resolvedModules?: ESMap<string, ResolvedModuleWithFailedLookupLocations>;
+        resolvedTypeReferenceDirectiveNames: ESMap<string, ResolvedTypeReferenceDirectiveWithFailedLookupLocations>;
+        redirectInfo?: RedirectInfoOfProgramFromBuildInfo;
+    }
+
+    /*@internal*/
+    export interface ProgramFromBuildInfo {
+        programFromBuildInfo: true;
+
+        getCompilerOptions(): CompilerOptions;
+        getRootFileNames(): readonly string[];
+        getSourceFiles(): SourceFileOfProgramFromBuildInfo[];
+        getSourceFileByPath(path: Path): SourceFileOfProgramFromBuildInfo | undefined;
+        getProjectReferences(): readonly ProjectReference[] | undefined;
+        getResolvedProjectReferences(): readonly ResolvedProjectReferenceOfProgramFromBuildInfo[] | undefined;
+        getMissingFilePaths(): readonly Path[];
+        getFileIncludeReasons(): MultiMap<Path, FileIncludeReason>;
+        getResolvedTypeReferenceDirectives(): ESMap<string, ResolvedTypeReferenceDirectiveWithFailedLookupLocations>;
+        getFilesByNameMap(): ESMap<Path, Path | false | 0>;
+        isSourceFileFromExternalLibraryPath(path: Path): boolean;
+        getFileProcessingDiagnostics(): readonly ReusableFilePreprocessingDiagnostics[] | undefined;
+
+        redirectTargetsMap: MultiMap<string, string>;
+        sourceFileToPackageName: ESMap<string, string>;
+        structureIsReused?: StructureIsReused;
+    }
+
+    /*@internal*/
+    export interface ReusableFilePreprocessingReferencedDiagnostic {
+        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic;
+        reason: ReferencedFile;
+        diagnostic: keyof typeof Diagnostics;
+        args?: (string | number | undefined)[];
+    }
+
+    /*@internal*/
+    export interface ReusableFilePreprocessingFileExplainingDiagnostic {
+        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic;
+        file?: string;
+        fileProcessingReason: FileIncludeReason;
+        diagnostic: keyof typeof Diagnostics;
+        args?: (string | number | undefined)[];
+    }
+
+    /*@internal*/
+    export type ReusableFilePreprocessingDiagnostics = ReusableFilePreprocessingReferencedDiagnostic | ReusableFilePreprocessingFileExplainingDiagnostic;
 
     /* @internal */
     export type RedirectTargetsMap = ReadonlyESMap<string, readonly string[]>;
@@ -6105,6 +6198,9 @@ namespace ts {
         oldProgram?: Program;
         configFileParsingDiagnostics?: readonly Diagnostic[];
     }
+
+    /* @internal */
+    export type CreateProgramOptionsWithProgramFromBuildInfo = Omit<CreateProgramOptions, "oldProgram"> & { oldProgram: ProgramFromBuildInfo; };
 
     /* @internal */
     export interface CommandLineOptionBase {
