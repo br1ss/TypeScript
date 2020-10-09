@@ -457,7 +457,7 @@ namespace ts {
 
         // just check if sourceFile with the name exists
         const filePathWithoutExtension = removeFileExtension(fileOrDirectoryPath);
-        const realProgram = isBuilderProgram(program) ? program.getProgramOrUndefined() : program;
+        const realProgram = isBuilderProgram(program) ? program.getProgramOrProgramFromBuildInfoOrUndefined() : program;
         if (hasSourceFile((filePathWithoutExtension + Extension.Ts) as Path) ||
             hasSourceFile((filePathWithoutExtension + Extension.Tsx) as Path)) {
             writeLog(`Project: ${configFileName} Detected output file: ${fileOrDirectory}`);
