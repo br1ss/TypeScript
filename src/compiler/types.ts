@@ -3785,6 +3785,10 @@ namespace ts {
     /*@internal*/
     export type FilePreprocessingDiagnostics = FilePreprocessingReferencedDiagnostic | FilePreprocessingFileExplainingDiagnostic;
 
+    /*@internal*/
+    export const missingSourceOfProjectReferenceRedirect = false;
+    /*@internal*/
+    export const missingFile = 0;
     export interface Program extends ScriptReferenceHost {
         getCurrentDirectory(): string;
         /**
@@ -3804,7 +3808,7 @@ namespace ts {
         /* @internal */
         getMissingFilePaths(): readonly Path[];
         /* @internal */
-        getFilesByNameMap(): ESMap<string, SourceFile | false | undefined>;
+        getFilesByNameMap(): ESMap<string, SourceFile | typeof missingSourceOfProjectReferenceRedirect | typeof missingFile>;
 
         /**
          * Emits the JavaScript and declaration files.  If targetSourceFile is not specified, then
