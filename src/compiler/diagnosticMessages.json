@@ -4557,11 +4557,11 @@
         "category": "Message",
         "code": 6182
     },
-    "Reusing resolution of module '{0}' to file '{1}' from old program.": {
+    "Reusing resolution of module '{0}' from '{1}' of old program, it was successfully resolved to '{2}'.": {
         "category": "Message",
         "code": 6183
     },
-    "Reusing module resolutions originating in '{0}' since resolutions are unchanged from old program.": {
+    "Reusing resolution of module '{0}' from '{1}' of old program, it was successfully resolved to '{2}' with Package ID '{3}'.": {
         "category": "Message",
         "code": 6184
     },
@@ -4972,6 +4972,46 @@
         "category": "Suggestion",
         "code": 6387,
         "reportsDeprecated": true
+    },
+    "Reusing resolution of module '{0}' from '{1}' of old program, it was not resolved.": {
+        "category": "Message",
+        "code": 6388
+    },
+    "Reusing resolution of type reference directive '{0}' from '{1}' of old program, it was successfully resolved to '{2}'.": {
+        "category": "Message",
+        "code": 6389
+    },
+    "Reusing resolution of type reference directive '{0}' from '{1}' of old program, it was successfully resolved to '{2}' with Package ID '{3}'.": {
+        "category": "Message",
+        "code": 6390
+    },
+    "Reusing resolution of type reference directive '{0}' from '{1}' of old program, it was not resolved.": {
+        "category": "Message",
+        "code": 6391
+    },
+    "Reusing resolution of module '{0}' from '{1}' found in cache from location '{2}', it was successfully resolved to '{3}'.": {
+        "category": "Message",
+        "code": 6392
+    },
+    "Reusing resolution of module '{0}' from '{1}' found in cache from location '{2}', it was successfully resolved to '{3}' with Package ID '{4}'.": {
+        "category": "Message",
+        "code": 6393
+    },
+    "Reusing resolution of module '{0}' from '{1}' found in cache from location '{2}', it was not resolved.": {
+        "category": "Message",
+        "code": 6394
+    },
+    "Reusing resolution of type reference directive '{0}' from '{1}' found in cache from location '{2}', it was successfully resolved to '{3}'.": {
+        "category": "Message",
+        "code": 6395
+    },
+    "Reusing resolution of type reference directive '{0}' from '{1}' found in cache from location '{2}', it was successfully resolved to '{3}' with Package ID '{4}'.": {
+        "category": "Message",
+        "code": 6396
+    },
+    "Reusing resolution of type reference directive '{0}' from '{1}' found in cache from location '{2}', it was not resolved.": {
+        "category": "Message",
+        "code": 6397
     },
 
     "The expected type comes from property '{0}' which is declared here on type '{1}'": {
