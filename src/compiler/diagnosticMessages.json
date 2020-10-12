@@ -4781,6 +4781,10 @@
         "category": "Error",
         "code": 6238
     },
+    "Save module and type reference directive resolution information in '.tsbuildinfo' file.": {
+        "category": "Message",
+        "code": 6239
+    },
 
     "Projects to reference": {
         "category": "Message",
