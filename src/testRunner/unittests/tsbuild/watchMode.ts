@@ -1169,7 +1169,7 @@ const a: string = "hello";`),
                 sys.exit = noop;
                 fakes.withTemporaryPatchingForBuildinfoReadWrite(sys, sys => {
                     executeCommandLine(sys, noop, ["--b", "."]);
-                    executeCommandLine(sys, noop, ["--b", ".", "--cleanResolutions"]);
+                    executeCommandLine(sys, noop, ["--b", ".", "--cleanPersistedProgram"]);
                 });
                 sys.exit = exit;
                 sys.clearOutput();
@@ -1351,7 +1351,7 @@ const a: string = "hello";`),
                 sys.exit = noop;
                 fakes.withTemporaryPatchingForBuildinfoReadWrite(sys, sys => {
                     executeCommandLine(sys, noop, ["--b", "."]);
-                    executeCommandLine(sys, noop, ["--b", ".", "--cleanResolutions"]);
+                    executeCommandLine(sys, noop, ["--b", ".", "--cleanPersistedProgram"]);
                 });
                 sys.exit = exit;
                 sys.clearOutput();
