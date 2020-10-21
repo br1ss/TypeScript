@@ -597,7 +597,11 @@ namespace ts {
     }
 
     /*@internal*/
-    export function isReferencedFile(reason: FileIncludeReason | undefined): reason is ReferencedFile {
+    export function isReferencedFile(reason: FileIncludeReason | undefined): reason is ReferencedFile;
+    /*@internal*/
+    export function isReferencedFile(reason: FileIncludeReason | PersistedProgramFileIncludeReason | undefined): reason is PersistedProgramReferencedFile;
+    /*@internal*/
+    export function isReferencedFile(reason: FileIncludeReason | PersistedProgramFileIncludeReason | undefined): reason is ReferencedFile | PersistedProgramReferencedFile {
         switch (reason?.kind) {
             case FileIncludeKind.Import:
             case FileIncludeKind.ReferenceFile:
@@ -832,7 +836,7 @@ namespace ts {
         const cachedDeclarationDiagnosticsForFile: DiagnosticCache<DiagnosticWithLocation> = {};
 
         let resolvedTypeReferenceDirectives = new Map<string, ResolvedTypeReferenceDirectiveWithFailedLookupLocations>();
-        let fileProcessingDiagnostics: FilePreprocessingDiagnostics[] | undefined;
+        let fileProcessingDiagnostics: FilePreprocessingDiagnostic[] | undefined;
 
         // The below settings are to track if a .js file should be add to the program if loaded via searching under node_modules.
         // This works as imported modules are discovered recursively in a depth first manner, specifically:
@@ -1677,7 +1681,7 @@ namespace ts {
                     newSourceFile.resolvedTypeReferenceDirectiveNames = oldSourceFile.resolvedTypeReferenceDirectiveNames;
                 }
             }
-            const oldFilesByNameMap = oldProgram.getFilesByNameMap() as ESMap<Path, SourceFile | Path | typeof missingSourceOfProjectReferenceRedirect | typeof missingFile>;
+            const oldFilesByNameMap = oldProgram.getFilesByNameMap() as ESMap<Path, SourceFileOfProgramFromBuildInfo | Path | typeof missingSourceOfProjectReferenceRedirect | typeof missingFile>;
             oldFilesByNameMap.forEach((oldFile, path) => {
                 if (!oldFile) {
                     filesByName.set(path, oldFile as false | 0);
@@ -1696,25 +1700,7 @@ namespace ts {
 
             files = newSourceFiles;
             fileReasons = oldProgram.getFileIncludeReasons();
-            if (!isProgramFromBuildInfo(oldProgram)) {
-                fileProcessingDiagnostics = oldProgram.getFileProcessingDiagnostics();
-            }
-            else {
-                const reusableDiagnostics = oldProgram.getFileProcessingDiagnostics();
-                if (reusableDiagnostics) {
-                    const toPath = getToPathForBuildInfoFilePath(options, currentDirectory, getCanonicalFileName);
-                    fileProcessingDiagnostics = map(reusableDiagnostics, reusable => ({
-                        ...reusable,
-                        diagnostic: Diagnostics[reusable.diagnostic],
-                        file: (reusable as ReusableFilePreprocessingFileExplainingDiagnostic).file !== undefined ?
-                            toPath((reusable as ReusableFilePreprocessingFileExplainingDiagnostic).file!) :
-                            undefined
-                    }));
-                }
-                else {
-                    fileProcessingDiagnostics = undefined;
-                }
-            }
+            fileProcessingDiagnostics = oldProgram.getFileProcessingDiagnostics();
             resolvedTypeReferenceDirectives = oldProgram.getResolvedTypeReferenceDirectives();
 
             sourceFileToPackageName = oldProgram.sourceFileToPackageName;
@@ -2882,7 +2868,8 @@ namespace ts {
         function processTypeReferenceDirectives(file: SourceFile) {
             // We lower-case all type references because npm automatically lowercases all packages. See GH#9824.
             const typeDirectives = map(file.typeReferenceDirectives, ref => toFileNameLowerCase(ref.fileName));
-            if (!typeDirectives) {
+            if (!typeDirectives?.length) {
+                file.resolvedTypeReferenceDirectiveNames = undefined;
                 return;
             }
 
@@ -2902,7 +2889,7 @@ namespace ts {
             resolved: ResolvedTypeReferenceDirectiveWithFailedLookupLocations,
             reason: FileIncludeReason
         ): void {
-            tracing?.push(tracing.Phase.Program, "processTypeReferenceDirective", { directive: typeReferenceDirective, hasResolved: !!resolveModuleNamesReusingOldState, refKind: reason.kind, refPath: isReferencedFile(reason) ? reason.file : undefined });
+            tracing?.push(tracing.Phase.Program, "processTypeReferenceDirective", { directive: typeReferenceDirective, hasResolved: !!resolved.resolvedTypeReferenceDirective, refKind: reason.kind, refPath: isReferencedFile(reason) ? reason.file : undefined });
             processTypeReferenceDirectiveWorker(typeReferenceDirective, resolved, reason);
             tracing?.pop();
         }

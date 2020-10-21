@@ -236,24 +236,25 @@ interface Symbol {
         }
     }
 
-    type ProgramBuildInfoDiagnostic = string | [string, readonly ReusableDiagnostic[]];
-    type ProgramBuilderInfoFilePendingEmit = [string, "DtsOnly" | "Full"];
-    interface ProgramBuildInfo {
+    type ReadableProgramBuildInfoDiagnostic = string | [string, readonly ReusableDiagnostic[]];
+    type ReadableProgramBuilderInfoFilePendingEmit = [string, "DtsOnly" | "Full"];
+    interface ReadableProgramBuildInfo {
         fileNames: readonly string[];
         fileNamesList: readonly (readonly string[])[] | undefined;
         fileInfos: MapLike<BuilderState.FileInfo>;
         options: CompilerOptions;
         referencedMap?: MapLike<string[]>;
         exportedModulesMap?: MapLike<string[]>;
-        semanticDiagnosticsPerFile?: readonly ProgramBuildInfoDiagnostic[];
-        affectedFilesPendingEmit?: readonly ProgramBuilderInfoFilePendingEmit[];
+        semanticDiagnosticsPerFile?: readonly ReadableProgramBuildInfoDiagnostic[];
+        affectedFilesPendingEmit?: readonly ReadableProgramBuilderInfoFilePendingEmit[];
+        peristedProgram?: PersistedProgram;
     }
-    type ReadableBuildInfo = Omit<BuildInfo, "program"> & { program: ProgramBuildInfo | undefined; size: number; };
+    type ReadableBuildInfo = Omit<BuildInfo, "program"> & { program: ReadableProgramBuildInfo | undefined; size: number; };
     function generateBuildInfoProgramBaseline(sys: System, originalWriteFile: System["writeFile"], buildInfoPath: string, buildInfo: BuildInfo) {
-        const fileInfos: ProgramBuildInfo["fileInfos"] = {};
+        const fileInfos: ReadableProgramBuildInfo["fileInfos"] = {};
         buildInfo.program?.fileInfos.forEach((fileInfo, index) => fileInfos[toFileName(index + 1)] = fileInfo);
         const fileNamesList = buildInfo.program?.fileIdsList?.map(fileIdsListId => fileIdsListId.map(toFileName));
-        const program: ProgramBuildInfo | undefined = buildInfo.program && {
+        const program: ReadableProgramBuildInfo | undefined = buildInfo.program && {
             fileNames: buildInfo.program.fileNames,
             fileNamesList,
             fileInfos,
@@ -271,6 +272,7 @@ interface Symbol {
                     emitKind === BuilderFileEmit.Full ? "Full" :
                         Debug.assertNever(emitKind)
             ]),
+            peristedProgram: buildInfo.program.peristedProgram,
         };
         const version = buildInfo.version === ts.version ? fakes.version : buildInfo.version;
         const result: ReadableBuildInfo = {
