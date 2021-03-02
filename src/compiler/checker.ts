@@ -308,7 +308,7 @@ namespace ts {
                 if (!sf.resolvedModules) return;
 
                 forEachEntry(sf.resolvedModules, r => {
-                    if (r && r.packageId) set.add(r.packageId.name);
+                    if (r.resolvedModule?.packageId) set.add(r.resolvedModule.packageId.name);
                 });
             });
             return set;
