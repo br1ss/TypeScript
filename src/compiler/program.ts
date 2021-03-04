@@ -759,6 +759,17 @@ namespace ts {
         }
     }
 
+    /*@internal*/
+    export function getMissingFilePaths(filesByName: ESMap<Path, SourceFile | SourceFileOfProgramFromBuildInfo | Path | typeof missingSourceOfProjectReferenceRedirect | typeof missingFile>): readonly Path[] {
+        let missingFilePaths: Path[] | undefined;
+        filesByName.forEach((file, path) => {
+            if (file === missingFile) {
+                (missingFilePaths ||= []).push(path);
+            }
+        });
+        return missingFilePaths || emptyArray;
+    }
+
     export function getConfigFileParsingDiagnostics(configFileParseResult: ParsedCommandLine): readonly Diagnostic[] {
         return configFileParseResult.options.configFile ?
             [...configFileParseResult.options.configFile.parseDiagnostics, ...configFileParseResult.errors] :
@@ -1033,15 +1044,12 @@ namespace ts {
                 }
             }
 
-            missingFilePaths = arrayFrom(mapDefinedIterator(filesByName.entries(), ([path, file]) => file === missingFile ? path : undefined));
             files = stableSort(processingDefaultLibFiles, compareDefaultLibFiles).concat(processingOtherFiles);
             processingDefaultLibFiles = undefined;
             processingOtherFiles = undefined;
             packageIdToSourceFile = undefined!;
             filesByNameIgnoreCase = undefined!;
         }
-
-        Debug.assert(!!missingFilePaths);
 
         // Release any files we have acquired in the old program but are
         // not part of the new program.
@@ -1070,7 +1078,7 @@ namespace ts {
             getSourceFile,
             getSourceFileByPath,
             getSourceFiles: () => files,
-            getMissingFilePaths: () => missingFilePaths!, // TODO: GH#18217
+            getMissingFilePaths,
             getFilesByNameMap: () => filesByName,
             getCompilerOptions: () => options,
             getSyntacticDiagnostics,
@@ -1145,6 +1153,10 @@ namespace ts {
         tracing?.pop();
 
         return program;
+
+        function getMissingFilePaths() {
+            return missingFilePaths ||= ts.getMissingFilePaths(filesByName);
+        }
 
         function resolveModuleNamesWorker(moduleNames: string[], containingFile: SourceFile, reusedNames: string[] | undefined): readonly ResolvedModuleWithFailedLookupLocations[] {
             if (!moduleNames.length) return emptyArray;
@@ -1658,8 +1670,6 @@ namespace ts {
                 return StructureIsReused.SafeModules;
             }
 
-            missingFilePaths = oldProgram.getMissingFilePaths();
-
             // update fileName -> file mapping
             for (let index = 0; index < newSourceFiles.length; index++) {
                 const newSourceFile = newSourceFiles[index];
@@ -1734,7 +1744,7 @@ namespace ts {
                     // Use local caches
                     const path = toPath(f);
                     if (getSourceFileByPath(path)) return true;
-                    if (contains(missingFilePaths, path)) return false;
+                    if (contains(getMissingFilePaths(), path)) return false;
                     // Before falling back to the host
                     return host.fileExists(f);
                 },
