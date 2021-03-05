@@ -95,6 +95,19 @@ namespace ts.projectSystem {
         };
     }
 
+    export function createLoggerWithInMemoryLogs() {
+        const { logger, hasErrorMsg } = createHasErrorMessageLogger();
+        const logs: string[] = [];
+        logger.hasLevel = returnTrue;
+        logger.loggingEnabled = returnTrue;
+        logger.info = s => logs.push(s.replace(/Elapsed::?\s[0-9]+(?:\.\d+)?ms/g, "Elapsed:: *ms"));
+        return { logger, logs, hasErrorMsg };
+    }
+
+    export function baselineTsserverLogs(scenario: string, subScenario: string, baseline: string[]) {
+        Harness.Baseline.runBaseline(`tsserver/${scenario}/${subScenario.split(" ").join("-")}.js`, baseline.join("\r\n"));
+    }
+
     export class TestTypingsInstaller extends TI.TypingsInstaller implements server.ITypingsInstaller {
         protected projectService!: server.ProjectService;
         constructor(
