@@ -271,15 +271,34 @@ interface Symbol {
         ProjectReferenceFile |
         ReadablePersistedProgramReferencedFile |
         AutomaticTypeDirectiveFile;
+    interface ReadablePersistedProgramFilePreprocessingReferencedDiagnostic {
+        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic;
+        reason: ReadablePersistedProgramReferencedFile;
+        diagnostic: keyof typeof Diagnostics;
+        args?: (string | number | undefined)[];
+    }
+    interface ReadablePersistedProgramFilePreprocessingFileExplainingDiagnostic {
+        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic;
+        file?: string;
+        fileProcessingReason: ReadablePersistedProgramFileIncludeReason;
+        diagnostic: keyof typeof Diagnostics;
+        args?: (string | number | undefined)[];
+    }
+    type ReadablePersistedProgramFilePreprocessingDiagnostic = ReadablePersistedProgramFilePreprocessingReferencedDiagnostic | ReadablePersistedProgramFilePreprocessingFileExplainingDiagnostic;
+    interface ReadablePersistedProgramResolvedProjectReference {
+        commandLine: Pick<ParsedCommandLine, "projectReferences">;
+        sourceFile: { version: string; path: string; };
+        references: readonly (ReadablePersistedProgramResolvedProjectReference | undefined)[] | undefined;
+    }
     interface ReadablePersistedProgram {
         files: readonly ReadablePersistedProgramSourceFile[] | undefined;
         rootFileNames: readonly string[] | undefined;
         filesByName: MapLike<string | typeof missingSourceOfProjectReferenceRedirect | typeof missingFile> | undefined;
         projectReferences: readonly ProjectReference[] | undefined;
-        resolvedProjectReferences: readonly (PersistedProgramResolvedProjectReference | undefined)[] | undefined;
+        resolvedProjectReferences: readonly (ReadablePersistedProgramResolvedProjectReference | undefined)[] | undefined;
         missingPaths: readonly string[] | undefined;
         resolvedTypeReferenceDirectives: MapLike<number> | undefined;
-        fileProcessingDiagnostics: readonly ReusableFilePreprocessingDiagnostic[] | undefined;
+        fileProcessingDiagnostics: readonly ReadablePersistedProgramFilePreprocessingDiagnostic[] | undefined;
         resolutions: readonly PersistedProgramResolution[] | undefined;
     }
     interface ReadableProgramBuildInfo {
@@ -324,7 +343,10 @@ interface Symbol {
                 ...buildInfo.program.peristedProgram,
                 files: buildInfo.program.peristedProgram.files?.map(toReadablePersistedProgramSourceFile),
                 filesByName,
+                projectReferences: buildInfo.program.peristedProgram.projectReferences,
+                resolvedProjectReferences: buildInfo.program.peristedProgram.resolvedProjectReferences?.map(toReadablePersistedProgramResolvedProjectReference),
                 missingPaths: buildInfo.program.peristedProgram.missingPaths?.map(toFileName),
+                fileProcessingDiagnostics: buildInfo.program.peristedProgram.fileProcessingDiagnostics?.map(toReadablePersistedProgramFilePreprocessingDiagnostic),
             },
         };
         const version = buildInfo.version === ts.version ? fakes.version : buildInfo.version;
@@ -364,8 +386,38 @@ interface Symbol {
             };
         }
 
+        function toReadablePersistedProgramReferencedFile(reason: PersistedProgramReferencedFile): ReadablePersistedProgramReferencedFile {
+            return { ...reason, file: toFileName(reason.file) };
+        }
+
         function toReadablePersistedProgramFileIncludeReason(reason: PersistedProgramFileIncludeReason): ReadablePersistedProgramFileIncludeReason {
-            return isReferencedFile(reason) ? { ...reason, file: toFileName(reason.file) } : reason;
+            return isReferencedFile(reason) ? toReadablePersistedProgramReferencedFile(reason) : reason;
+        }
+
+        function toReadablePersistedProgramFilePreprocessingDiagnostic(d: PersistedProgramFilePreprocessingDiagnostic): ReadablePersistedProgramFilePreprocessingDiagnostic {
+            switch (d.kind) {
+                case FilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic:
+                    return {
+                        ...d,
+                        file: d.file ? toFileName(d.file) : undefined,
+                        fileProcessingReason: toReadablePersistedProgramFileIncludeReason(d.fileProcessingReason),
+                    };
+                case FilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic:
+                    return {
+                        ...d,
+                        reason: toReadablePersistedProgramReferencedFile(d.reason),
+                    };
+                default:
+                    Debug.assertNever(d);
+            }
+        }
+
+        function toReadablePersistedProgramResolvedProjectReference(ref: PersistedProgramResolvedProjectReference | undefined): ReadablePersistedProgramResolvedProjectReference | undefined {
+            return ref && {
+                commandLine: ref.commandLine,
+                sourceFile: { ...ref.sourceFile, path: toFileName(ref.sourceFile.path) },
+                references: ref.references?.map(toReadablePersistedProgramResolvedProjectReference)
+            };
         }
     }
 

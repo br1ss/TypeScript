@@ -3974,26 +3974,6 @@ namespace ts {
         sourceFileToPackageName: ESMap<Path, string>;
     }
 
-    /*@internal*/
-    export interface ReusableFilePreprocessingReferencedDiagnostic {
-        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic;
-        reason: ReferencedFile;
-        diagnostic: keyof typeof Diagnostics;
-        args?: (string | number | undefined)[];
-    }
-
-    /*@internal*/
-    export interface ReusableFilePreprocessingFileExplainingDiagnostic {
-        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic;
-        file?: string;
-        fileProcessingReason: FileIncludeReason;
-        diagnostic: keyof typeof Diagnostics;
-        args?: (string | number | undefined)[];
-    }
-
-    /*@internal*/
-    export type ReusableFilePreprocessingDiagnostic = ReusableFilePreprocessingReferencedDiagnostic | ReusableFilePreprocessingFileExplainingDiagnostic;
-
     /* @internal */
     export type RedirectTargetsMap = ReadonlyESMap<Path, readonly string[]>;
 
