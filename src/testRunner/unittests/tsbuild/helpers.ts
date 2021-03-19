@@ -260,25 +260,45 @@ interface Symbol {
         redirectTargets?: readonly string[];
         packageName?: string;
     }
+    enum ReadableFileIncludeKind {
+        RootFile = "RootFile",
+        SourceFromProjectReference = "SourceFromProjectReference",
+        OutputFromProjectReference = "OutputFromProjectReference",
+        Import = "Import",
+        ReferenceFile = "ReferenceFile",
+        TypeReferenceDirective = "TypeReferenceDirective",
+        LibFile = "LibFile",
+        LibReferenceDirective = "LibReferenceDirective",
+        AutomaticTypeDirectiveFile = "AutomaticTypeDirectiveFile",
+    }
+    type ReadableReferencedFileKind = ReadableFileIncludeKind.Import |
+        ReadableFileIncludeKind.ReferenceFile |
+        ReadableFileIncludeKind.TypeReferenceDirective |
+        ReadableFileIncludeKind.LibReferenceDirective;
     interface ReadablePersistedProgramReferencedFile {
-        kind: ReferencedFileKind;
+        kind: ReadableReferencedFileKind;
         file: string;
         index: number;
     }
-    type ReadablePersistedProgramFileIncludeReason =
+    type ReadablePersistedProgramFileIncludeReason = Omit<(
         RootFile |
         LibFile |
         ProjectReferenceFile |
         ReadablePersistedProgramReferencedFile |
-        AutomaticTypeDirectiveFile;
+        AutomaticTypeDirectiveFile
+    ), "kind"> & { kind: ReadableFileIncludeKind };
+    const enum ReadableFilePreprocessingDiagnosticsKind {
+        FilePreprocessingReferencedDiagnostic = "FilePreprocessingReferencedDiagnostic",
+        FilePreprocessingFileExplainingDiagnostic = "FilePreprocessingFileExplainingDiagnostic"
+    }
     interface ReadablePersistedProgramFilePreprocessingReferencedDiagnostic {
-        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic;
+        kind: ReadableFilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic;
         reason: ReadablePersistedProgramReferencedFile;
         diagnostic: keyof typeof Diagnostics;
         args?: (string | number | undefined)[];
     }
     interface ReadablePersistedProgramFilePreprocessingFileExplainingDiagnostic {
-        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic;
+        kind: ReadableFilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic;
         file?: string;
         fileProcessingReason: ReadablePersistedProgramFileIncludeReason;
         diagnostic: keyof typeof Diagnostics;
@@ -390,12 +410,28 @@ interface Symbol {
             };
         }
 
+        function toReadableFileIncludeKind(kind: FileIncludeKind): ReadableFileIncludeKind {
+            switch (kind) {
+                case FileIncludeKind.RootFile: return ReadableFileIncludeKind.RootFile;
+                case FileIncludeKind.SourceFromProjectReference: return ReadableFileIncludeKind.SourceFromProjectReference;
+                case FileIncludeKind.OutputFromProjectReference: return ReadableFileIncludeKind.OutputFromProjectReference;
+                case FileIncludeKind.Import: return ReadableFileIncludeKind.Import;
+                case FileIncludeKind.ReferenceFile: return ReadableFileIncludeKind.ReferenceFile;
+                case FileIncludeKind.TypeReferenceDirective: return ReadableFileIncludeKind.TypeReferenceDirective;
+                case FileIncludeKind.LibFile: return ReadableFileIncludeKind.LibFile;
+                case FileIncludeKind.LibReferenceDirective: return ReadableFileIncludeKind.LibReferenceDirective;
+                case FileIncludeKind.AutomaticTypeDirectiveFile: return ReadableFileIncludeKind.AutomaticTypeDirectiveFile;
+                default:
+                    Debug.assertNever(kind);
+            }
+        }
+
         function toReadablePersistedProgramReferencedFile(reason: PersistedProgramReferencedFile): ReadablePersistedProgramReferencedFile {
-            return { ...reason, file: toFileName(reason.file) };
+            return { ...reason, kind: toReadableFileIncludeKind(reason.kind) as ReadableReferencedFileKind, file: toFileName(reason.file) };
         }
 
         function toReadablePersistedProgramFileIncludeReason(reason: PersistedProgramFileIncludeReason): ReadablePersistedProgramFileIncludeReason {
-            return isReferencedFile(reason) ? toReadablePersistedProgramReferencedFile(reason) : reason;
+            return isReferencedFile(reason) ? toReadablePersistedProgramReferencedFile(reason) : { ...reason, kind: toReadableFileIncludeKind(reason.kind) };
         }
 
         function toReadablePersistedProgramFilePreprocessingDiagnostic(d: PersistedProgramFilePreprocessingDiagnostic): ReadablePersistedProgramFilePreprocessingDiagnostic {
@@ -403,12 +439,14 @@ interface Symbol {
                 case FilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic:
                     return {
                         ...d,
+                        kind: ReadableFilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic,
                         file: d.file ? toFileName(d.file) : undefined,
                         fileProcessingReason: toReadablePersistedProgramFileIncludeReason(d.fileProcessingReason),
                     };
                 case FilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic:
                     return {
                         ...d,
+                        kind: ReadableFilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic,
                         reason: toReadablePersistedProgramReferencedFile(d.reason),
                     };
                 default:

@@ -198,7 +198,7 @@ exitCode:: ExitStatus.undefined
           "hasNoDefaultLib": true,
           "includeReasons": [
             {
-              "kind": 6
+              "kind": "LibFile"
             }
           ]
         },
@@ -211,21 +211,21 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/anotherfilereusingresolution.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 1
             },
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 0
             },
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 1
             }
@@ -254,7 +254,7 @@ exitCode:: ExitStatus.undefined
           },
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 0
             }
           ]
@@ -268,12 +268,12 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 4,
+              "kind": "ReferenceFile",
               "file": "./src/filewithref.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 4
             }
           ]
@@ -290,7 +290,7 @@ exitCode:: ExitStatus.undefined
           ],
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 2
             }
           ]
@@ -322,7 +322,7 @@ exitCode:: ExitStatus.undefined
           },
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 3
             }
           ]
@@ -510,7 +510,7 @@ exitCode:: ExitStatus.undefined
           "hasNoDefaultLib": true,
           "includeReasons": [
             {
-              "kind": 6
+              "kind": "LibFile"
             }
           ]
         },
@@ -523,21 +523,21 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/anotherfilereusingresolution.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 1
             },
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 0
             },
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 1
             }
@@ -566,7 +566,7 @@ exitCode:: ExitStatus.undefined
           },
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 0
             }
           ]
@@ -580,12 +580,12 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 4,
+              "kind": "ReferenceFile",
               "file": "./src/filewithref.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 4
             }
           ]
@@ -602,7 +602,7 @@ exitCode:: ExitStatus.undefined
           ],
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 2
             }
           ]
@@ -634,7 +634,7 @@ exitCode:: ExitStatus.undefined
           },
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 3
             }
           ]
@@ -848,7 +848,7 @@ exitCode:: ExitStatus.undefined
           "hasNoDefaultLib": true,
           "includeReasons": [
             {
-              "kind": 6
+              "kind": "LibFile"
             }
           ]
         },
@@ -861,21 +861,21 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/anotherfilereusingresolution.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 1
             },
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 1
             },
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 2
             }
@@ -904,7 +904,7 @@ exitCode:: ExitStatus.undefined
           },
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 0
             }
           ]
@@ -918,12 +918,12 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 4,
+              "kind": "ReferenceFile",
               "file": "./src/filewithref.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 5
             }
           ]
@@ -940,7 +940,7 @@ exitCode:: ExitStatus.undefined
           ],
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 2
             }
           ]
@@ -954,12 +954,12 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 4
             }
           ]
@@ -996,7 +996,7 @@ exitCode:: ExitStatus.undefined
           },
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 3
             }
           ]
@@ -1216,7 +1216,7 @@ exitCode:: ExitStatus.undefined
           "hasNoDefaultLib": true,
           "includeReasons": [
             {
-              "kind": 6
+              "kind": "LibFile"
             }
           ]
         },
@@ -1229,21 +1229,21 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/anotherfilereusingresolution.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 2
             },
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 1
             },
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 2
             }
@@ -1272,7 +1272,7 @@ exitCode:: ExitStatus.undefined
           },
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 0
             }
           ]
@@ -1286,7 +1286,7 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 1
             }
           ]
@@ -1300,12 +1300,12 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 4,
+              "kind": "ReferenceFile",
               "file": "./src/filewithref.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 6
             }
           ]
@@ -1322,7 +1322,7 @@ exitCode:: ExitStatus.undefined
           ],
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 3
             }
           ]
@@ -1336,12 +1336,12 @@ exitCode:: ExitStatus.undefined
           "flags": 0,
           "includeReasons": [
             {
-              "kind": 3,
+              "kind": "Import",
               "file": "./src/main.ts",
               "index": 0
             },
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 5
             }
           ]
@@ -1378,7 +1378,7 @@ exitCode:: ExitStatus.undefined
           },
           "includeReasons": [
             {
-              "kind": 0,
+              "kind": "RootFile",
               "index": 4
             }
           ]
