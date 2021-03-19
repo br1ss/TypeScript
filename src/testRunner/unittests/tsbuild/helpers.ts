@@ -252,7 +252,7 @@ interface Symbol {
     type ReadableBuildInfo = Omit<BuildInfo, "program"> & { program: ReadableProgramBuildInfo | undefined; size: number; };
     function generateBuildInfoProgramBaseline(sys: System, originalWriteFile: System["writeFile"], buildInfoPath: string, buildInfo: BuildInfo) {
         const fileInfos: ReadableProgramBuildInfo["fileInfos"] = {};
-        buildInfo.program?.fileInfos.forEach((fileInfo, index) => fileInfos[toFileName(index + 1)] = fileInfo);
+        buildInfo.program?.fileInfos.forEach((fileInfo, index) => fileInfos[toFileName(index + 1 as ProgramBuildInfoFileId)] = fileInfo);
         const fileNamesList = buildInfo.program?.fileIdsList?.map(fileIdsListId => fileIdsListId.map(toFileName));
         const program: ReadableProgramBuildInfo | undefined = buildInfo.program && {
             fileNames: buildInfo.program.fileNames,
@@ -263,7 +263,7 @@ interface Symbol {
             exportedModulesMap: toMapOfReferencedSet(buildInfo.program.exportedModulesMap),
             semanticDiagnosticsPerFile: buildInfo.program.semanticDiagnosticsPerFile?.map(d =>
                 isNumber(d) ?
-                    toFileName(d) :
+                    toFileName(d as ProgramBuildInfoFileId) :
                     [toFileName(d[0]), d[1]]
             ),
             affectedFilesPendingEmit: buildInfo.program.affectedFilesPendingEmit?.map(([fileId, emitKind]) => [
@@ -284,11 +284,11 @@ interface Symbol {
         // For now its just JSON.stringify
         originalWriteFile.call(sys, `${buildInfoPath}.readable.baseline.txt`, JSON.stringify(result, /*replacer*/ undefined, 2));
 
-        function toFileName(fileId: number) {
+        function toFileName(fileId: ProgramBuildInfoFileId) {
             return buildInfo.program!.fileNames[fileId - 1];
         }
 
-        function toFileNames(fileIdsListId: number) {
+        function toFileNames(fileIdsListId: ProgramBuildInfoFileIdListId) {
             return fileNamesList![fileIdsListId - 1];
         }
 
