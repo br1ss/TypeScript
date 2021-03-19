@@ -359,7 +359,7 @@ interface Symbol {
         // For now its just JSON.stringify
         originalWriteFile.call(sys, `${buildInfoPath}.readable.baseline.txt`, JSON.stringify(result, /*replacer*/ undefined, 2));
 
-        function toFileName(fileId: ProgramBuildInfoFileId) {
+        function toFileName(fileId: ProgramBuildInfoFileId | ProgramBuildInfoAbsoluteFileId) {
             return buildInfo.program!.fileNames[fileId - 1];
         }
 
@@ -379,6 +379,8 @@ interface Symbol {
         function toReadablePersistedProgramSourceFile(file: PersistedProgramSourceFile): ReadablePersistedProgramSourceFile {
             return {
                 ...file,
+                fileName: toFileName(file.fileName),
+                originalFileName: toFileName(file.originalFileName),
                 path: toFileName(file.path),
                 resolvedPath: toFileName(file.resolvedPath),
                 redirectInfo: file.redirectInfo && { redirectTarget: { path: toFileName(file.redirectInfo.redirectTarget.path) } },
