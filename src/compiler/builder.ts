@@ -864,37 +864,28 @@ namespace ts {
         redirectTargets?: readonly ProgramBuildInfoAbsoluteFileId[];
         packageName?: string;
     }
-    export interface PersistedProgramReferencedFile {
-        kind: ReferencedFileKind;
+    export type PersistedProgramReferencedFile = Omit<ReferencedFile, "file"> & {
         file: ProgramBuildInfoFileId;
-        index: number;
-    }
+    };
     export type PersistedProgramFileIncludeReason =
         RootFile |
         LibFile |
         ProjectReferenceFile |
         PersistedProgramReferencedFile |
         AutomaticTypeDirectiveFile;
-    export interface PersistedProgramFilePreprocessingReferencedDiagnostic {
-        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingReferencedDiagnostic;
+    export type PersistedProgramFilePreprocessingReferencedDiagnostic = Omit<FilePreprocessingReferencedDiagnostic, "reason" | "diagnostic"> & {
         reason: PersistedProgramReferencedFile;
         diagnostic: keyof typeof Diagnostics;
-        args?: (string | number | undefined)[];
-    }
-    export interface PersistedProgramFilePreprocessingFileExplainingDiagnostic {
-        kind: FilePreprocessingDiagnosticsKind.FilePreprocessingFileExplainingDiagnostic;
+    };
+    export type PersistedProgramFilePreprocessingFileExplainingDiagnostic = Omit<FilePreprocessingFileExplainingDiagnostic, "file" | "fileProcessingReason" | "diagnostic"> & {
         file?: ProgramBuildInfoFileId;
         fileProcessingReason: PersistedProgramFileIncludeReason;
         diagnostic: keyof typeof Diagnostics;
-        args?: (string | number | undefined)[];
-    }
+    };
     export type PersistedProgramFilePreprocessingDiagnostic = PersistedProgramFilePreprocessingReferencedDiagnostic | PersistedProgramFilePreprocessingFileExplainingDiagnostic;
-    export interface PersistedProgramProjectReference {
+    export type PersistedProgramProjectReference = Omit<ProjectReference, "path"> & {
         path: ProgramBuildInfoAbsoluteFileId;
-        originalPath?: string;
-        prepend?: boolean;
-        circular?: boolean;
-    }
+    };
     export interface PersistedProgramResolvedProjectReference {
         commandLine: { projectReferences?: readonly PersistedProgramProjectReference[]; } | undefined;
         sourceFile: { version: string; path: ProgramBuildInfoFileId; };
