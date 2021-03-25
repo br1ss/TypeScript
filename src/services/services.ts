@@ -1284,6 +1284,15 @@ namespace ts {
             return sourceFile;
         }
 
+        function getOldProgram(options: CompilerOptions, compilerHost: CompilerHost): Program | ProgramFromBuildInfo | undefined {
+            if (program) return program;
+            if (!options.persistResolutions) return undefined;
+            const buildInfoResult = readBuildInfoForProgram(options, compilerHost);
+            if (!buildInfoResult?.buildInfo.program?.peristedProgram) return undefined;
+            const result = createProgramFromBuildInfo(buildInfoResult.buildInfo.program, buildInfoResult.buildInfoPath, compilerHost);
+            return result?.program;
+        }
+
         function synchronizeHostData(): void {
             Debug.assert(languageServiceMode !== LanguageServiceMode.Syntactic);
             // perform fast check if host supports it
@@ -1365,7 +1374,7 @@ namespace ts {
                 rootNames: rootFileNames,
                 options: newSettings,
                 host: compilerHost,
-                oldProgram: program,
+                oldProgram: getOldProgram(newSettings, compilerHost),
                 projectReferences
             });
 
